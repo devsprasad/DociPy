@@ -1,5 +1,5 @@
 # DociPy
-DociPy or Documentor based on IronPython is flexible .NET based tool for parsing python scripts and generate documentation for a Python project
+DociPy or *Documentor based on IronPython* is a flexible .NET based tool for parsing python scripts and generate documentation for a Python project
 
 ## QuickStart 
 Tool is GUI based and is pretty straight-forward to use. Simply add the project directory by clicking **Add Root** button. 
