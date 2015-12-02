@@ -50,8 +50,14 @@ namespace DociPy
         public PyModule Process(string file = "")
         {
             this.FileName = file;
-            PyModule pm = _process();
-            return pm;
+            try
+            {
+                PyModule pm = _process();
+                return pm;
+            } catch (Exception ex)
+            {
+                throw new Exception("Error while processing " + file + " ( " + ex.Message.Trim() + ")");
+            }
         }
 
         public PyModule _process()
@@ -98,6 +104,11 @@ namespace DociPy
                 }
                 else
                 {
+                    if (current_doc.Count == i)
+                    {
+                        pm.Description = string.Join("\n", current_doc.ToArray());
+                        pm.RawDocLine = current_doc;
+                    }
                     current_doc.Clear();
                 }
                 i++;
@@ -136,6 +147,7 @@ namespace DociPy
         {
             Debug.Print("class starts");
             pc = new PyClass();
+            pc.RawDocLine = doc;
             _inClassDef = true;
             // **********************
             string header = _lines[i];
@@ -215,6 +227,7 @@ namespace DociPy
         public PyFunction _processPyFunction(ref int i, List<string> doc)
         {
             PyFunction pf = new PyFunction();
+            pf.RawDocLine = doc;
             string header = _lines[i].Trim();
             header = header.Replace("def ", "");
             string name = header.Substring(0, header.IndexOf("("));
@@ -237,11 +250,11 @@ namespace DociPy
                             throw new InvalidOperationException("no argument named '" + _param[0] + "'");
                         }
                     }
-                    else if (item.StartsWith("@ref"))
-                    {
-                        string[] refernce = _splitRefTag(item);
-                        pf.Description += "<a href=\"" + refernce[0] + "\">" + refernce[1] + "</a>";
-                    }
+                    //else if (item.StartsWith("@ref"))
+                    //{
+                    //    string[] refernce = _splitRefTag(item);
+                    //    pf.Description += "<a href=\"" + refernce[0] + "\">" + refernce[1] + "</a>";
+                    //}
                 }
                 else
                 {

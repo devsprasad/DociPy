@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace DociPy
@@ -82,7 +83,7 @@ namespace DociPy
                         if (name.StartsWith("Engine"))
                         {
                             engines.Add(name);
-                            cmbDocEngines.Items.Add(name.Replace("Engine",""));
+                            cmbDocEngines.Items.Add(name.Replace("Engine", ""));
                         }
                     }
                 }
@@ -201,20 +202,44 @@ namespace DociPy
             LockControls(true);
         }
 
-        TreeNode BrowserRoot = new TreeNode();
-        private void btnGo_Click(object sender, EventArgs e)
+        private void clearFolder(string FolderName)
         {
             try
             {
-                LockControls();
-                txtLogs.Clear();
-                _docEngine.Generate(full_paths.ToArray());
-                UnlockControls();
-            } catch (Exception ex)
+                DirectoryInfo dir = new DirectoryInfo(FolderName);
+
+                foreach (FileInfo fi in dir.GetFiles())
+                {
+                    fi.Delete();
+                }
+
+                foreach (DirectoryInfo di in dir.GetDirectories())
+                {
+                    clearFolder(di.FullName);
+                    di.Delete();
+                }
+            } catch (Exception)
             {
-                log(Program.ipy.getTraceback(ex).ToString());
+                return;
             }
             
+        }
+
+        TreeNode BrowserRoot = new TreeNode();
+        private void btnGo_Click(object sender, EventArgs e)
+        {
+            LockControls();
+            txtLogs.Clear();
+            try
+            {
+                clearFolder(_docEngine.OutputDirectory);
+                _docEngine.Generate(full_paths.ToArray());
+            } catch (Exception ex)
+            {
+                log("\n ");
+                log("E:" + Program.ipy.getTraceback(ex).ToString());
+            }
+            UnlockControls();
         }
 
         private void lstFiles_DoubleClick(object sender, EventArgs e)
@@ -298,26 +323,26 @@ namespace DociPy
 
 
 
-        private AbstractDocEngine _docEngine; 
+        private AbstractDocEngine _docEngine;
         private void cmbDocEngines_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbDocEngines.SelectedIndex >= 0)
             {
-                string engine_name =  "Engine" + cmbDocEngines.Text;
-                object engine_obj = Program.ipy.EngineScope .GetVariable(engine_name);
+                string engine_name = "Engine" + cmbDocEngines.Text;
+                object engine_obj = Program.ipy.EngineScope.GetVariable(engine_name);
                 object instance = Program.ipy.Engine.Runtime.Operations.CreateInstance(engine_obj);
                 if (typeof(AbstractDocEngine).IsAssignableFrom(instance.GetType()))
                 {
                     _docEngine = (AbstractDocEngine)instance;
                     _docEngine.NewLogMessage += _docEngine_NewLogMessage;
                     propGrid.SelectedObject = _docEngine;
-                }                
+                }
             }
         }
 
         void _docEngine_NewLogMessage(object sender, string msg)
         {
-            log(msg,false);
+            log(msg, false);
         }
 
         private void cmbThemes_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -325,6 +350,7 @@ namespace DociPy
             if (cmbThemes.SelectedIndex >= 0)
             {
                 _docEngine.Theme = System.IO.Path.Combine(template_path, cmbThemes.SelectedItem.ToString());
+                propGrid.Refresh();
             }
         }
 

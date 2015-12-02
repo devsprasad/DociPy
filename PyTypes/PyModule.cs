@@ -13,12 +13,14 @@ namespace DociPy.PyTypes
         public string Description { get; set; }
         public List<PyFunction> Functions { get; set; }
         public List<PyClass> Classes { get; set; }
+        public List<string> RawDocLine { get; set; }
         public List<string> Imports { get; set; }
         public PyModule()
         {
             Functions = new List<PyFunction>();
             Classes = new List<PyClass>();
             Imports = new List<string>();
+            this.RawDocLine = new List<string>();
             this.Description = "";
         }
     }

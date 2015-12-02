@@ -47,7 +47,6 @@
             this.btnGo = new System.Windows.Forms.Button();
             this.txtLogs = new System.Windows.Forms.TextBox();
             this.txtInfo = new System.Windows.Forms.TextBox();
-            this.chkDetReport = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.propGrid = new System.Windows.Forms.PropertyGrid();
             this.cmbDocEngines = new System.Windows.Forms.ComboBox();
@@ -191,7 +190,7 @@
             // 
             // btnGo
             // 
-            this.btnGo.Location = new System.Drawing.Point(544, 248);
+            this.btnGo.Location = new System.Drawing.Point(544, 277);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(75, 23);
             this.btnGo.TabIndex = 3;
@@ -203,12 +202,12 @@
             // 
             this.txtLogs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtLogs.Location = new System.Drawing.Point(216, 277);
+            this.txtLogs.Location = new System.Drawing.Point(216, 306);
             this.txtLogs.Multiline = true;
             this.txtLogs.Name = "txtLogs";
             this.txtLogs.ReadOnly = true;
             this.txtLogs.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLogs.Size = new System.Drawing.Size(403, 168);
+            this.txtLogs.Size = new System.Drawing.Size(403, 139);
             this.txtLogs.TabIndex = 2;
             // 
             // txtInfo
@@ -221,16 +220,6 @@
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtInfo.Size = new System.Drawing.Size(201, 94);
             this.txtInfo.TabIndex = 5;
-            // 
-            // chkDetReport
-            // 
-            this.chkDetReport.AutoSize = true;
-            this.chkDetReport.Location = new System.Drawing.Point(216, 254);
-            this.chkDetReport.Name = "chkDetReport";
-            this.chkDetReport.Size = new System.Drawing.Size(95, 17);
-            this.chkDetReport.TabIndex = 7;
-            this.chkDetReport.Text = "Detailed report";
-            this.chkDetReport.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
@@ -247,7 +236,7 @@
             this.propGrid.Location = new System.Drawing.Point(216, 71);
             this.propGrid.Name = "propGrid";
             this.propGrid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-            this.propGrid.Size = new System.Drawing.Size(403, 168);
+            this.propGrid.Size = new System.Drawing.Size(403, 200);
             this.propGrid.TabIndex = 10;
             this.propGrid.ToolbarVisible = false;
             // 
@@ -279,13 +268,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(627, 455);
+            this.ClientSize = new System.Drawing.Size(631, 455);
             this.Controls.Add(this.propGrid);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cmbDocEngines);
             this.Controls.Add(this.cmbThemes);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.chkDetReport);
             this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btnGo);
             this.Controls.Add(this.txtLogs);
@@ -324,7 +312,6 @@
         private System.Windows.Forms.TextBox txtInfo;
         private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
         private System.Windows.Forms.ToolStripMenuItem removeAllToolStripMenuItem;
-        private System.Windows.Forms.CheckBox chkDetReport;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel lblCount;
         private System.Windows.Forms.ToolStripButton toolStripButton1;

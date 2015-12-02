@@ -12,5 +12,11 @@ namespace DociPy.PyTypes
         public string Type { get; set; }
         public string Default { get; set; }
         public string Description { get; set; }
+
+        public List<string> RawDocLine { get; set; }
+        public PyArg()
+        {
+            this.RawDocLine = new List<string>();
+        }
     }
 }
