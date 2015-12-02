@@ -254,13 +254,12 @@
             // 
             this.ipyEdit.CharIndex = 1;
             this.ipyEdit.LineIndex = 1;
-            this.ipyEdit.Location = new System.Drawing.Point(676, 71);
+            this.ipyEdit.Location = new System.Drawing.Point(643, 37);
             this.ipyEdit.Name = "ipyEdit";
             this.ipyEdit.Prompt = ">> ";
             this.ipyEdit.Size = new System.Drawing.Size(229, 372);
             this.ipyEdit.TabIndex = 0;
             this.ipyEdit.Text = "";
-            this.ipyEdit.Visible = false;
             this.ipyEdit.CommandEntered += new System.EventHandler<SimbedEnvisionCodeEditor.CommandEnteredEventArgs>(this.ipyEdit_CommandEntered);
             this.ipyEdit.TextChanged += new System.EventHandler(this.ipyEdit_TextChanged);
             // 
@@ -268,7 +267,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(631, 455);
+            this.ClientSize = new System.Drawing.Size(864, 455);
             this.Controls.Add(this.propGrid);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cmbDocEngines);

@@ -52,17 +52,18 @@ namespace DociPy
             return s.ToArray();
         }
 
-        private string template_path = @".\data\";
+        private string template_path = @".\data\themes";
         private void loadThemes()
         {
-            string path = System.IO.Path.Combine(template_path, "Themes");
-            string[] files = System.IO.Directory.GetFiles(path, "*.css", System.IO.SearchOption.AllDirectories);
-            foreach (string template in files)
+            string[] dirs = System.IO.Directory.GetDirectories(template_path);
+            foreach (string dir in dirs)
             {
-                System.IO.FileInfo f = new System.IO.FileInfo(template);
-                string rel_template_path = template.Replace(template_path, "");
-                string template_name = f.Name;
-                cmbThemes.Items.Add(rel_template_path);
+                string config_file = Path.Combine(dir, "theme.config");
+                string template_file = Path.Combine(dir, "template.html");
+                if (File.Exists(config_file) && File.Exists(template_file))
+                {
+                    cmbThemes.Items.Add(dir.Replace(template_path + "\\", ""));
+                }
             }
             if (cmbThemes.Items.Count > 0) cmbThemes.SelectedIndex = 0;
         }
