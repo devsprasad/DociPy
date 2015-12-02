@@ -4,36 +4,27 @@ import System
 from System.ComponentModel import *
 
 
-_twitter_format =   { 
-						"module":""	
-					}
-
-class _TwitterFormat(object):
-
-	def __init__(self):
-		super(_TwitterFormat, self).__init__()
-
-	def substitue(self,html = ""):
-		for key,value in _twitter_format:
-			html = 	html.replace("class='%s'" % key, "class='%s'" % value)
-		return html
-		
-
 
 
 class _HTMLDocGen(object):
 
+	__project_title = "MyProject"
+	__project_version = "1.0.0"
 	__config = {}
 	__styles = []
 	__themeDir = ""
 	__output = ""
 	__template_data = ""
+	__log = None
 
-	def __init__(self,theme_dir, output_dir):
+	def __init__(self,title, version, theme_dir, output_dir,log_func):
 		super(_HTMLDocGen, self).__init__()
 		self.__themeDir = theme_dir
 		self.__output = output_dir
 		self.__createThemeConfig()
+		self.__log = log_func
+		self.__project_title =title
+		self.__project_version = version
 
 	def __relativeStylePath(self,target,exact_file):
 		fi = System.IO.FileInfo(exact_file)
@@ -45,11 +36,15 @@ class _HTMLDocGen(object):
 	def __createStyles(self):
 		styles = ""
 		for style in self.__styles:
-			fi = System.IO.FileInfo(style)
-			out = self.__output + "\\styles\\" + fi.Name
-			self.__copyFile(style,out)
-			rel = self.__relativeStylePath(out, style)
-			styles += "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">" % rel
+			if(style.startswith(r"https://") or 
+				style.startswith(r"http://")):
+				rel = style
+			else:
+				fi = System.IO.FileInfo(style)
+				out = self.__output + "\\styles\\" + fi.Name
+				self.__copyFile(style,out)
+				rel = self.__relativeStylePath(out, style)
+			styles += "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n" % rel
 		return styles
 
 	def __copyFile(self, src, dst):
@@ -82,7 +77,11 @@ class _HTMLDocGen(object):
 				self.__config[key] = ""
 			elif line.startswith("$style:"):
 				css = str(line[len("$style:"):]).strip()
-				self.__styles.append(System.IO.Path.Combine(self.__themeDir, css))
+				if(css.startswith(r"https://") or 
+					css.startswith(r"http://")):
+					self.__styles.append(css)
+				else:
+					self.__styles.append(System.IO.Path.Combine(self.__themeDir, css))
 			else:
 				if key in self.__config.keys():
 					self.__config[key] += line
@@ -113,6 +112,7 @@ class _HTMLDocGen(object):
 			d = self.__config["class"]
 			d = d.replace("[class_name]", _class.Name)
 			d = d.replace("[class_info]", _class.Description)
+			d = d.replace("[methods]", self.__wrapFunctions(_class.Methods))
 			html += d
 		return html
 
@@ -130,6 +130,8 @@ class _HTMLDocGen(object):
 	def generate(self,module,dst_path):
 		html = self.__wrapModule(module)
 		html = html.replace("[styles]", self.__createStyles())
+		html = html.replace("[project_title]", self.__project_title)
+		html = html.replace("[project_version]", self.__project_version)
 		self.__createFile(dst_path, html)
 		return html
 
@@ -145,11 +147,29 @@ class EngineDynaThemer(AbstractDocEngine):
 	__htmlgen = None
 	__useBootstrap = True
 	__classFirst = True
+	__project_title = "MyProject"
+	__project_version = "1.0.0"
 
 	def __init__(self):
 		super(EngineDynaThemer, self).__init__()
 		self.__output_path = "docs"
 		self.__parser = PyColumbus()
+
+	@property
+	def ProjectTitle(self):
+	    return self.__project_title
+
+	@ProjectTitle.setter
+	def ProjectTitle(self,val):
+		self.__project_title = val
+
+	@property
+	def ProjectVersion(self):
+	    return self.__project_version
+
+	@ProjectVersion.setter
+	def ProjectVersion(self,val):
+		self.__project_version = val
 
 	@property
 	def Theme(self):
@@ -189,7 +209,8 @@ class EngineDynaThemer(AbstractDocEngine):
 
 	def Generate(self, files):
 		if System.IO.Directory.Exists(self.__root_path):
-			self.__htmlgen = _HTMLDocGen(self.__theme_path, self.__output_path)
+			self.__htmlgen = _HTMLDocGen(self.ProjectTitle, self.ProjectVersion,
+			 self.__theme_path, self.__output_path, self.log)
 			self.log("starting..\n")
 			self.log("creating output directory..")
 			System.IO.Directory.CreateDirectory(self.__output_path)
