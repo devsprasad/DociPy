@@ -1,0 +1,127 @@
+body{
+	background-color: #F0F0F0;
+}
+.module{
+	/*div*/
+	border: 1px solid #A0A0A0;
+	border-radius: 10px;
+	padding: 15px;
+	min-width: 30em;
+	max-width: 65em;
+	background-color: #FFF;
+	color: #000;
+	margin:0 auto;
+}
+
+.module-name {
+/*label*/
+	color: blue;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.module-info {
+	/*p*/
+	border-width: 1px;
+	border-bottom-style: solid;
+	border-spacing: 10px;
+	padding-bottom: 10px;
+	font-style: italic;
+}
+
+.functions{
+
+}
+
+.function-head{
+
+}
+
+.function {
+	/*div*/
+	border-style: dashed;
+	border-width: 1px;
+	margin-bottom: 10px;
+	padding: 10px;
+}
+
+.function-name{
+	/*label*/
+	color: green;
+	margin-bottom: 10px;
+}
+
+.function-info{
+/*label*/
+	padding: 1px;
+	font-style: italic;
+	padding: 10px;
+	color: gray;
+}
+
+.args{
+
+}
+
+.arg-head{
+
+}
+
+
+.arg{
+
+}
+
+.arg-name{
+/*span*/
+	color: maroon;
+	font-style: italic;	
+}
+
+.arg-info{
+
+}
+
+.arg-default{
+
+}
+
+.classes{
+
+}
+
+.class-head{
+
+}
+
+.class{
+
+}
+
+.class-name{
+
+}
+
+.class-info{
+
+}
+
+.methods{
+
+}
+
+.method-head{
+
+}
+
+.method{
+
+}
+
+.method-name{
+
+}
+
+.method-info{
+	
+}

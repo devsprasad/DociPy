@@ -1,0 +1,4 @@
+help(topic) - documentation on `topic` if available
+clear - clears the command window
+exit  - exits the application
+how_to_use() - for usage instructions
