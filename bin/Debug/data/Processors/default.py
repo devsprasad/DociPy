@@ -29,11 +29,11 @@ class _HTMLDocGen(object):
 	def __relativeStylePath(self,target,exact_file):
 		fi = System.IO.FileInfo(exact_file)
 		target = target.replace('\\', '/')
-		count = len(target.split('/')) - 3;
+		count = len(target.split('/')) - 2;
 		rel_path = System.IO.Path.Combine("..\\" * count, "styles",fi.Name)
 		return rel_path
 
-	def __createStyles(self):
+	def __createStyles(self, html_file):
 		styles = ""
 		for style in self.__styles:
 			if(style.startswith(r"https://") or 
@@ -43,15 +43,16 @@ class _HTMLDocGen(object):
 				fi = System.IO.FileInfo(style)
 				out = self.__output + "\\styles\\" + fi.Name
 				self.__copyFile(style,out)
-				rel = self.__relativeStylePath(out, style)
+				rel = self.__relativeStylePath(html_file,out )
 			styles += "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n" % rel
 		return styles
 
 	def __copyFile(self, src, dst):
-		fi = System.IO.FileInfo(dst)
-		_dir = fi.Directory
-		System.IO.Directory.CreateDirectory(_dir.FullName)
-		System.IO.File.Copy(src, dst)
+		if not System.IO.File.Exists(dst):
+			fi = System.IO.FileInfo(dst)
+			_dir = fi.Directory
+			System.IO.Directory.CreateDirectory(_dir.FullName)
+			System.IO.File.Copy(src, dst)
 
 	def __createFile(self,file_path, data=""):
 		fi = System.IO.FileInfo(file_path)
@@ -129,7 +130,7 @@ class _HTMLDocGen(object):
 
 	def generate(self,module,dst_path):
 		html = self.__wrapModule(module)
-		html = html.replace("[styles]", self.__createStyles())
+		html = html.replace("[styles]", self.__createStyles(dst_path))
 		html = html.replace("[project_title]", self.__project_title)
 		html = html.replace("[project_version]", self.__project_version)
 		self.__createFile(dst_path, html)
