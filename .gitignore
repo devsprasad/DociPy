@@ -8,8 +8,9 @@
 *.sln.docstates
 
 # Build results
-[Bb]in/
 [Oo]bj/
+*.vhost.exe.config
+*.vhost.exe
 
 # Roslyn cache directories
 *.ide/
