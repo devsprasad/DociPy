@@ -49,13 +49,11 @@
             this.btnGo = new System.Windows.Forms.Button();
             this.txtLogs = new System.Windows.Forms.TextBox();
             this.txtInfo = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.chkDetReport = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.cmbTemplates = new System.Windows.Forms.ComboBox();
             this.propGrid = new System.Windows.Forms.PropertyGrid();
+            this.cmbDocEngines = new System.Windows.Forms.ComboBox();
             this.ipyEdit = new SimbedEnvisionCodeEditor.InteractiveCommandEditor();
-            this.button4 = new System.Windows.Forms.Button();
             this.contextAdd.SuspendLayout();
             this.panelFileControl.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -126,7 +124,6 @@
             this.button3.TabIndex = 3;
             this.button3.Text = "Preview with &Browser";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // button1
             // 
@@ -136,7 +133,6 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "&Preview";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // toolStrip1
             // 
@@ -200,24 +196,24 @@
             // 
             this.cmbThemes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbThemes.FormattingEnabled = true;
-            this.cmbThemes.Location = new System.Drawing.Point(379, 44);
+            this.cmbThemes.Location = new System.Drawing.Point(216, 44);
             this.cmbThemes.Name = "cmbThemes";
-            this.cmbThemes.Size = new System.Drawing.Size(140, 21);
+            this.cmbThemes.Size = new System.Drawing.Size(185, 21);
             this.cmbThemes.TabIndex = 6;
-            this.cmbThemes.SelectedIndexChanged += new System.EventHandler(this.cmbTemplates_SelectedIndexChanged_1);
+            this.cmbThemes.SelectedIndexChanged += new System.EventHandler(this.cmbThemes_SelectedIndexChanged_1);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(376, 28);
+            this.label1.Location = new System.Drawing.Point(425, 28);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Themes";
+            this.label1.Text = "Documentation Engines";
             // 
             // btnGo
             // 
-            this.btnGo.Location = new System.Drawing.Point(544, 247);
+            this.btnGo.Location = new System.Drawing.Point(544, 248);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(75, 23);
             this.btnGo.TabIndex = 3;
@@ -240,25 +236,13 @@
             // txtInfo
             // 
             this.txtInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtInfo.Location = new System.Drawing.Point(12, 349);
+            this.txtInfo.Location = new System.Drawing.Point(12, 351);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtInfo.Size = new System.Drawing.Size(201, 94);
             this.txtInfo.TabIndex = 5;
-            // 
-            // button2
-            // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(463, 247);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Browse";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // chkDetReport
             // 
@@ -273,21 +257,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(219, 28);
+            this.label2.Location = new System.Drawing.Point(216, 24);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 13);
+            this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Template";
-            // 
-            // cmbTemplates
-            // 
-            this.cmbTemplates.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTemplates.FormattingEnabled = true;
-            this.cmbTemplates.Location = new System.Drawing.Point(219, 44);
-            this.cmbTemplates.Name = "cmbTemplates";
-            this.cmbTemplates.Size = new System.Drawing.Size(140, 21);
-            this.cmbTemplates.TabIndex = 6;
-            this.cmbTemplates.SelectedIndexChanged += new System.EventHandler(this.cmbTemplates_SelectedIndexChanged_1);
+            this.label2.Text = "Themes";
             // 
             // propGrid
             // 
@@ -298,44 +272,42 @@
             this.propGrid.TabIndex = 10;
             this.propGrid.ToolbarVisible = false;
             // 
+            // cmbDocEngines
+            // 
+            this.cmbDocEngines.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDocEngines.FormattingEnabled = true;
+            this.cmbDocEngines.Location = new System.Drawing.Point(428, 44);
+            this.cmbDocEngines.Name = "cmbDocEngines";
+            this.cmbDocEngines.Size = new System.Drawing.Size(191, 21);
+            this.cmbDocEngines.TabIndex = 6;
+            this.cmbDocEngines.SelectedIndexChanged += new System.EventHandler(this.cmbDocEngines_SelectedIndexChanged);
+            // 
             // ipyEdit
             // 
             this.ipyEdit.CharIndex = 1;
             this.ipyEdit.LineIndex = 1;
-            this.ipyEdit.Location = new System.Drawing.Point(69, 316);
+            this.ipyEdit.Location = new System.Drawing.Point(625, 71);
             this.ipyEdit.Name = "ipyEdit";
             this.ipyEdit.Prompt = ">> ";
-            this.ipyEdit.Size = new System.Drawing.Size(119, 68);
+            this.ipyEdit.Size = new System.Drawing.Size(229, 372);
             this.ipyEdit.TabIndex = 0;
             this.ipyEdit.Text = "";
             this.ipyEdit.Visible = false;
             this.ipyEdit.CommandEntered += new System.EventHandler<SimbedEnvisionCodeEditor.CommandEnteredEventArgs>(this.ipyEdit_CommandEntered);
             this.ipyEdit.TextChanged += new System.EventHandler(this.ipyEdit_TextChanged);
             // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(400, 247);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(57, 23);
-            this.button4.TabIndex = 11;
-            this.button4.Text = "Test";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
             // mainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(627, 455);
-            this.Controls.Add(this.button4);
+            this.ClientSize = new System.Drawing.Size(866, 455);
             this.Controls.Add(this.propGrid);
-            this.Controls.Add(this.cmbTemplates);
             this.Controls.Add(this.label2);
+            this.Controls.Add(this.cmbDocEngines);
             this.Controls.Add(this.cmbThemes);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chkDetReport);
             this.Controls.Add(this.txtInfo);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.btnGo);
             this.Controls.Add(this.txtLogs);
             this.Controls.Add(this.panelFileControl);
@@ -375,17 +347,15 @@
         private System.Windows.Forms.ToolStripMenuItem removeAllToolStripMenuItem;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox chkDetReport;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel lblCount;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ComboBox cmbThemes;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox cmbTemplates;
         private System.Windows.Forms.PropertyGrid propGrid;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ComboBox cmbDocEngines;
 
     }
 }

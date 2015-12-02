@@ -51,7 +51,7 @@ namespace DociPy
             return s.ToArray();
         }
 
-        private string template_path = "./data/";
+        private string template_path = @".\data\";
         private void loadThemes()
         {
             string path = System.IO.Path.Combine(template_path, "Themes");
@@ -66,26 +66,35 @@ namespace DociPy
             if (cmbThemes.Items.Count > 0) cmbThemes.SelectedIndex = 0;
         }
 
-        private void loadTemplates()
+
+        private List<string> engines;
+        private void LoadEngines()
         {
-            string path = System.IO.Path.Combine(template_path, "Templates");
-            string[] files = System.IO.Directory.GetFiles(path, "*.html", System.IO.SearchOption.AllDirectories);
-            foreach (string template in files)
+            engines = new List<string>();
+            foreach (string name in Program.ipy.EngineScope.GetVariableNames())
             {
-                System.IO.FileInfo f = new System.IO.FileInfo(template);
-                string rel_template_path = template.Replace(template_path, "");
-                string template_name = f.Name;
-                cmbTemplates.Items.Add(rel_template_path);
+                object obj = Program.ipy.EngineScope.GetVariable(name);
+                if (obj != null)
+                {
+                    if (obj.GetType() == typeof(IronPython.Runtime.Types.PythonType))
+                    {
+                        IronPython.Runtime.Types.PythonType pt = (IronPython.Runtime.Types.PythonType)obj;
+                        if (name.StartsWith("Engine"))
+                        {
+                            engines.Add(name);
+                            cmbDocEngines.Items.Add(name.Replace("Engine",""));
+                        }
+                    }
+                }
             }
-            if (cmbTemplates.Items.Count > 0) cmbTemplates.SelectedIndex = 0;
+            cmbDocEngines.SelectedIndex = 0;
         }
 
-
-        private DocumentationEngine docEngine = new DocumentationEngine();
         private void mainForm_Load(object sender, EventArgs e)
         {
-            loadThemes(); loadTemplates();
-            propGrid.SelectedObject = docEngine;
+            Program.ipy.LoadLibs(@".\data\processors");
+            LoadEngines();
+            loadThemes();
         }
 
         private void log(string msg, bool newline = true)
@@ -195,53 +204,22 @@ namespace DociPy
         TreeNode BrowserRoot = new TreeNode();
         private void btnGo_Click(object sender, EventArgs e)
         {
-            LockControls();
-            txtLogs.Clear();
-            BrowserRoot.Nodes.Clear();
-            int fileCount = full_paths.Count;
-            int methodCount = 0;
-            int classCount = 0;
-            Columbus cExplorer = new Columbus();
-            //
-            // start
-            //            
-            List<ScriptInfo> scripts = new List<ScriptInfo>();
-            for (int i = 0 ; i < full_paths.Count ; i++)
+            try
             {
-                lstFiles.SelectedIndex = i;
-                string file_name = lstFiles.SelectedItem.ToString();
-                string file_path = full_paths[i];
-                TreeNode trvNode = BrowserRoot.Nodes.Add(file_name);
-                log("processing file " + file_name + "...       ", chkDetReport.Checked);
-                ScriptInfo scrinf = cExplorer.ProcessFile(file_path);
-                TreeNode clsNode = trvNode.Nodes.Add("Classes");
-                foreach (var item in scrinf.Class)
+                LockControls();
+                txtLogs.Clear();
+                List<string> files = new List<string>();
+                foreach (string item in lstFiles.Items)
                 {
-                    clsNode.Nodes.Add(item.Value.Name);
-
+                    files.Add(item);
                 }
-                TreeNode funcNode = trvNode.Nodes.Add("Functions");
-                foreach (var item in scrinf.Functions)
-                {
-                    funcNode.Nodes.Add(item.Value.Name);
-
-                }
-                methodCount += scrinf.Functions.Count;
-                classCount += scrinf.Class.Count;
-                log("done");
-                if (chkDetReport.Checked)
-                {
-                    log("===> Classes   : " + scrinf.Class.Count.ToString());
-                    log("===> Functions : " + scrinf.Functions.Count.ToString());
-                }
-                scripts.Add(scrinf);
+                _docEngine.Generate(files.ToArray());
+                UnlockControls();
+            } catch (Exception ex)
+            {
+                log(Program.ipy.getTraceback(ex).ToString());
             }
-            button2.Enabled = true;
-            log("=====================================");
-            log("Report: ");
-            log(string.Format("Processed {0} methods from {1} classes from {2} files", methodCount, classCount, fileCount));
-            docEngine.WriteHTML(scripts,_html,_css);
-            UnlockControls();
+            
         }
 
         private void lstFiles_DoubleClick(object sender, EventArgs e)
@@ -309,8 +287,8 @@ namespace DociPy
 
                 updateList();
             }
-            docEngine.RootDirectory = fd.SelectedPath;
-
+            _docEngine.RootDirectory = fd.SelectedPath;
+            propGrid.Refresh();
         }
 
         private void cmbThemes_SelectedIndexChanged(object sender, EventArgs e)
@@ -318,63 +296,39 @@ namespace DociPy
 
         }
 
-        private void cmbTemplates_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
-        }
 
-        
-        private void button1_Click_1(object sender, EventArgs e)
+
+
+
+        private AbstractDocEngine _docEngine; 
+        private void cmbDocEngines_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstFiles.SelectedIndex > 0 )
+            if (cmbDocEngines.SelectedIndex >= 0)
             {
-                string path = full_paths[lstFiles.SelectedIndex];
-                string p = path.Replace(docEngine.RootDirectory, docEngine.OutputDirectory) + ".html";
-                p = System.IO.Path.GetFullPath (p.Replace('\\', '/'));
-                if (System.IO.File.Exists(p))
+                string engine_name =  "Engine" + cmbDocEngines.Text;
+                object engine_obj = Program.ipy.EngineScope .GetVariable(engine_name);
+                object instance = Program.ipy.Engine.Runtime.Operations.CreateInstance(engine_obj);
+                if (typeof(AbstractDocEngine).IsAssignableFrom(instance.GetType()))
                 {
-                    p = "file:///" + p;
-                    if (sender == button3)
-                    {
-                        //preview with browser;
-                        System.Diagnostics.Process proc = new System.Diagnostics.Process();
-                        proc.StartInfo.FileName = "explorer";
-                        proc.StartInfo.Arguments = p;
-                        proc.Start();
-                    }
-                    else
-                    {
-                        frmPreview fp = new frmPreview(p);
-                        fp.ShowDialog();
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("File not found. Have you forgotten to generate the documentation first?","Error",
-                        MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
-                }
+                    _docEngine = (AbstractDocEngine)instance;
+                    _docEngine.NewLogMessage += _docEngine_NewLogMessage;
+                    propGrid.SelectedObject = _docEngine;
+                }                
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        void _docEngine_NewLogMessage(object sender, string msg)
         {
-
+            log(msg,false);
         }
-        private string _css = "";
-        private string _html = "";
-        private void cmbTemplates_SelectedIndexChanged_1(object sender, EventArgs e)
+
+        private void cmbThemes_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (cmbTemplates.SelectedIndex >= 0 && cmbThemes.SelectedIndex >= 0)
+            if (cmbThemes.SelectedIndex >= 0)
             {
-                _css = System.IO.Path.Combine(Application.StartupPath, template_path, cmbThemes.SelectedItem.ToString());
-                _html = System.IO.Path.Combine(template_path, cmbTemplates.SelectedItem.ToString());
+                _docEngine.Theme = System.IO.Path.Combine(template_path, cmbThemes.SelectedItem.ToString());
             }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            DociPy.Explorers.PyColumbus pc = new Explorers.PyColumbus();
-            pc.Process("./test/lib/builtins.py");
         }
 
 

@@ -125,11 +125,15 @@ namespace DociPy
         /// <remarks></remarks>
         public void LoadLibs(string path)
         {
-            if (my.FileSystem.FileExists(path + "./init.py"))
+            if (System.IO.Directory.Exists(path))
             {
                 LoadAssemblies(path);
-                path += "./init.py";
-                LoadScript(path);
+                string[] files = System.IO.Directory.GetFiles(path, "*.py", System.IO.SearchOption.AllDirectories);
+                foreach (string file in files)
+                {
+                    Debug.Print("loading " + file);
+                    LoadScript(file);
+                }
             }
         }
 
