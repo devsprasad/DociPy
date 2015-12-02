@@ -35,8 +35,6 @@
             this.panelFileControl = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lstFiles = new System.Windows.Forms.ListBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -94,8 +92,6 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.lstFiles);
-            this.panel2.Controls.Add(this.button3);
-            this.panel2.Controls.Add(this.button1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 25);
             this.panel2.Name = "panel2";
@@ -111,28 +107,10 @@
             this.lstFiles.Location = new System.Drawing.Point(0, 0);
             this.lstFiles.Name = "lstFiles";
             this.lstFiles.ScrollAlwaysVisible = true;
-            this.lstFiles.Size = new System.Drawing.Size(201, 277);
+            this.lstFiles.Size = new System.Drawing.Size(201, 316);
             this.lstFiles.TabIndex = 2;
             this.lstFiles.SelectedIndexChanged += new System.EventHandler(this.lstFiles_SelectedIndexChanged);
             this.lstFiles.DoubleClick += new System.EventHandler(this.lstFiles_DoubleClick);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(81, 277);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(120, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Preview with &Browser";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(0, 277);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "&Preview";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // toolStrip1
             // 
@@ -268,6 +246,7 @@
             this.propGrid.HelpVisible = false;
             this.propGrid.Location = new System.Drawing.Point(216, 71);
             this.propGrid.Name = "propGrid";
+            this.propGrid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
             this.propGrid.Size = new System.Drawing.Size(403, 168);
             this.propGrid.TabIndex = 10;
             this.propGrid.ToolbarVisible = false;
@@ -286,7 +265,7 @@
             // 
             this.ipyEdit.CharIndex = 1;
             this.ipyEdit.LineIndex = 1;
-            this.ipyEdit.Location = new System.Drawing.Point(625, 71);
+            this.ipyEdit.Location = new System.Drawing.Point(676, 71);
             this.ipyEdit.Name = "ipyEdit";
             this.ipyEdit.Prompt = ">> ";
             this.ipyEdit.Size = new System.Drawing.Size(229, 372);
@@ -300,7 +279,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(866, 455);
+            this.ClientSize = new System.Drawing.Size(627, 455);
             this.Controls.Add(this.propGrid);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cmbDocEngines);
@@ -345,7 +324,6 @@
         private System.Windows.Forms.TextBox txtInfo;
         private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
         private System.Windows.Forms.ToolStripMenuItem removeAllToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox chkDetReport;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel lblCount;
@@ -354,7 +332,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PropertyGrid propGrid;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ComboBox cmbDocEngines;
 
     }

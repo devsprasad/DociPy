@@ -160,7 +160,7 @@ namespace DociPy
         private void AddFile(string file, string root = null)
         {
             string p = file;
-            if (root != null) p = file.Replace(root, ".");
+            if (root != null) p = file.Replace(root, "{root}");
             else p = file.Split('\\').Last();
             if (!full_paths.Contains(file))
             {
@@ -208,12 +208,7 @@ namespace DociPy
             {
                 LockControls();
                 txtLogs.Clear();
-                List<string> files = new List<string>();
-                foreach (string item in lstFiles.Items)
-                {
-                    files.Add(item);
-                }
-                _docEngine.Generate(files.ToArray());
+                _docEngine.Generate(full_paths.ToArray());
                 UnlockControls();
             } catch (Exception ex)
             {
@@ -266,7 +261,6 @@ namespace DociPy
 #endif
             fd.RootFolder = Environment.SpecialFolder.MyComputer;
             fd.Description = "Select a folder to look for python scripts";
-            lstFiles.Items.Clear();
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 DialogResult d = MessageBox.Show("Search inside subdirectories also?", "Recurse?",
@@ -280,6 +274,9 @@ namespace DociPy
                 {
                     files = System.IO.Directory.GetFiles(fd.SelectedPath, "*.py", System.IO.SearchOption.TopDirectoryOnly);
                 }
+                lstFiles.Items.Clear();
+                full_paths.Clear();
+                paths.Clear();
                 foreach (string item in files)
                 {
                     AddFile(item, fd.SelectedPath);
@@ -329,6 +326,11 @@ namespace DociPy
             {
                 _docEngine.Theme = System.IO.Path.Combine(template_path, cmbThemes.SelectedItem.ToString());
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
 
 
