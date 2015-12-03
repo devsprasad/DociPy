@@ -6,6 +6,10 @@ from System import *
 
 
 
+# Generates HTML files with given configuration options for the 
+# list of modules. Creates appropriate output directories. Copies
+# stylesheet files as mentioned in the theme.config file.
+# <label class='label-warning'>Not intended to be used directly.</label> 
 class _HTMLDocGen(object):
 
 	__project_title = "MyProject"
@@ -21,20 +25,24 @@ class _HTMLDocGen(object):
 	__project_info = ""
 	__recreate_root = False
 	__include_module_doc = False
+	__options = {}
 
-	def __init__(self,title, version, info, include_module_doc_in_index, 
-		theme_dir, root_dir, output_dir, recreate_root,log_func):
+
+	# @param:options: A dictionary containing all the options.
+	# @param:log_func: A function handle which will be called as a log function
+	def __init__(self, options, log_func):
 		super(_HTMLDocGen, self).__init__()
-		self.__themeDir = theme_dir
-		self.__root = root_dir
-		self.__output = output_dir
-		self.__createThemeConfig()
+		self.__project_title = options["project"]["title"]
+		self.__project_version = options["project"]["version"]
+		self.__project_info = options["project"]["info"]
+		self.__root  =options["project"]["root"]
+		self.__output = options["project"]["docs_dir"]
+		self.__recreate_root = options["config"]["recreate_root"]
+		self.__themeDir = options["config"]["theme"]
+		self.__include_module_doc = options["config"]["include_moduledoc"]
+		self.__show_private_members = options["config"]["show_private_members"]
 		self.__log = log_func
-		self.__project_title =title
-		self.__project_version = version
-		self.__project_info = info
-		self.__recreate_root = recreate_root
-		self.__include_module_doc = include_module_doc_in_index
+		self.__createThemeConfig()
 
 	def __relativeStylePath(self,target,exact_file):
 		fi = System.IO.FileInfo(exact_file)
@@ -73,6 +81,7 @@ class _HTMLDocGen(object):
 		f.close()
 
 	def __createThemeConfig(self):
+		self.__styles[:] = []
 		path = self.__themeDir + "\\theme.config"
 		f = open(path,"r")
 		data = f.readlines()
@@ -121,6 +130,35 @@ class _HTMLDocGen(object):
 			html.append(s)
 		return ",".join(html)
 
+
+	__properties = {}
+
+	def __isAsetter(self, line):
+		if line.startswith("@param"):
+			return False
+		if line.startswith("@"):
+			n = line[1:str(line).index(".")]
+			if n in self.__properties.keys(): return True
+		return False
+
+	def __wrapProperties(self):
+		html = ""
+		for prop in self.__properties.values():
+			func = prop[0]
+			_get = prop[1].replace("true","visible")
+			_get = _get.replace("false","not-visible")
+			_set = prop[2].replace("true","visible")
+			_set = _set.replace("false","not-visible")
+			d = self.__config["property"]
+			d = d.replace("[property_name]", func.Name)
+			d = d.replace("[property_info]", func.Description)
+			d = d.replace("[property_set]", _set)
+			d = d.replace("[property_get]", _get)
+			html += d
+		self.__properties.clear()
+		if html == "": return "(no properties)"
+		return html
+
 	def __wrapFunctions(self, functions, method = False, className = ""):
 		html = ""
 		if method : sub = "method"
@@ -130,6 +168,25 @@ class _HTMLDocGen(object):
 			if func.Name == "__init__" and method: 
 				func.Name = className 
 				d = self.__config["constructor"]
+			elif func.Name == "__del__" and method:
+				func.Name = "~" + className
+				d = self.__config["destructor"]
+			else:
+				prop = False
+				for line in func.RawDocLine:
+					if line.startswith("@property"):
+						self.__properties[func.Name] = [func, "true", "false"]
+						prop = True
+						break
+					elif self.__isAsetter(line):
+						if func.Name in self.__properties.keys():
+							self.__properties[func.Name][2] = "true"
+							prop = True
+							break
+				if prop : continue
+			if not self.__show_private_members:
+				if (func.Name.startswith("__") and not func.Name.endswith("__")):
+					d = ""
 			d = d.replace("[%s_name]" % sub, func.Name)
 			d = d.replace("[%s_info]" % sub, func.Description)
 			d = d.replace("[arg_tuple]",str(self.__createArgTuple(func.Args)))
@@ -148,6 +205,13 @@ class _HTMLDocGen(object):
 			d = d.replace("[class_info]", _class.Description)
 			d = d.replace("[methods]", 
 				self.__wrapFunctions(_class.Methods,True,_class.Name))
+			d = d.replace("[properties]", self.__wrapProperties())
+			bases = ""
+			for base in _class.BaseClasses:
+				_b = self.__config["parent_class"]
+				_b =_b.replace("[base]", base)
+				bases += _b
+			d  =d.replace("[bases]", bases)
 			html += d
 		if html == "": html = "(no classes)"
 		return html
@@ -177,8 +241,11 @@ class _HTMLDocGen(object):
 		self.__createFile(dst_path, html)
 		return dst_path
 
+
+	__classes = []
 	def __wrapIndexModule(self, module,module_path, include_doc = True):
 		name = str(module.Name).strip("\\").replace("\\",".").replace(".py","")
+		self.__classes.append((name, list(module.Classes),module_path))
 		if include_doc: data = str(module.Description)
 		else: data = ""
 		html = self.__config["indexmodule"]
@@ -187,6 +254,23 @@ class _HTMLDocGen(object):
 		html = html.replace("[module_path]", module_path)
 		return html
 
+	def __wrapIndexClasses(self):
+		html = ""
+		if len(self.__classes) == 0 : 
+			return "(no classes)"
+		for module,class_list, module_path in self.__classes:
+			for _class in class_list:
+				d = self.__config["indexclass"]
+				d = d.replace("[class_name]", module + "." + _class.Name)
+				d = d.replace("[module_path]", module_path)
+				html += d
+		if html == "" : html  ="(no classes)"
+		self.__classes[:] =[ ]
+		return html
+
+
+	# Generate the HTML files for the modules
+	# @param:modules:List of <code>PyModule</code> objects
 	def generate(self,modules):
 		html = ""
 		for mod in modules:
@@ -201,13 +285,13 @@ class _HTMLDocGen(object):
 		index_file = self.__output + "\\index.html"
 		index = self.__process_template(self.__index_template_data, index_file)
 		html = index.replace("[modules]", html)
+		html = html.replace("[classes]", self.__wrapIndexClasses())
 		self.__createFile(index_file, html)
 
 
 		
 
 class EngineHTML(AbstractDocEngine):
-
 	__output_path = ".\docs\\"
 	__root_path =""
 	__theme_path = ""
@@ -220,12 +304,15 @@ class EngineHTML(AbstractDocEngine):
 	__project_description = Array[str]([])
 	__root_path_recreate = False
 	__include_mod_doc_in_index = True
+	__show_private_members = False
 
 	def __init__(self):
 		super(EngineHTML, self).__init__()
 		self.__output_path = "docs"
 		self.__parser = PyColumbus()
 
+
+	# title of the project
 	@property
 	def ProjectTitle(self):
 	    return self.__project_title
@@ -279,9 +366,9 @@ class EngineHTML(AbstractDocEngine):
 	def RecreateRootStructure(self):
 		return self.__root_path_recreate
 
-	@RecreateRootStructure.setter
-	def RecreateRootStructure(self,val):
-		self.__root_path_recreate = val
+	# @RecreateRootStructure.setter
+	# def RecreateRootStructure(self,val):
+	# 	self.__root_path_recreate = val
 
 	@property
 	def IncludeModuleDocInIndex(self):
@@ -290,6 +377,14 @@ class EngineHTML(AbstractDocEngine):
 	@IncludeModuleDocInIndex.setter
 	def IncludeModuleDocInIndex(self,val):
 		self.__include_mod_doc_in_index = val
+
+	@property
+	def ShowPrivateMembers(self):
+		return self.__show_private_members
+
+	@ShowPrivateMembers.setter
+	def ShowPrivateMembers(self,val):
+		self.__show_private_members = val
 
 
 	def __invokeParser(self,files):
@@ -302,12 +397,25 @@ class EngineHTML(AbstractDocEngine):
 		self.log("done parsing scripts. No errors found\n")
 		return pymodules
 
+	def __getOptions(self):
+		options = {}
+		options["project"] = {}
+		options["config"] = {} 
+		options["project"]["title"] = self.ProjectTitle
+		options["project"]["version"] = self.ProjectVersion
+		options["project"]["info"] = self.ProjectDescription
+		options["project"]["root"] = self.__root_path
+		options["project"]["docs_dir"] = self.__output_path
+		options["config"]["theme"] = self.__theme_path
+		options["config"]["recreate_root"] = self.RecreateRootStructure
+		options["config"]["include_moduledoc"] = self.IncludeModuleDocInIndex
+		options["config"]["show_private_members"] = self.ShowPrivateMembers
+		return options
 
-	def Generate(self, files):
+
+	def Generate(self, files):		
 		if System.IO.Directory.Exists(self.__root_path):
-			self.__htmlgen = _HTMLDocGen(self.ProjectTitle, self.ProjectVersion, self.ProjectDescription,
-				self.IncludeModuleDocInIndex, self.__theme_path,self.__root_path, self.__output_path,
-				self.RecreateRootStructure, self.log)
+			self.__htmlgen = _HTMLDocGen(self.__getOptions(), self.log)
 			self.log("starting..\n")
 			self.log("creating output directory..")
 			System.IO.Directory.CreateDirectory(self.__output_path)

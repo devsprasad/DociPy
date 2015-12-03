@@ -1,56 +1,58 @@
 body{
-	background-color: #F0F0F0;
+	/*background-color: #F0F0F0;*/
+}
+
+
+.label-warning {
+  background-color: #f0ad4e;
+  font-style: normal;
+  padding: 2px;
 }
 .module{
 	/*div*/
-	border: 1px solid #A0A0A0;
-	border-radius: 10px;
 	padding: 15px;
-	min-width: 30em;
-	max-width: 65em;
-	background-color: #FFF;
-	color: #000;
-	margin:0 auto;
+	text-align:  justify;
 }
+
 
 .module-name {
 /*label*/
-	color: blue;
-	font-style: italic;
+	color: #C45400;
 	font-weight: bold;
+	padding-bottom: 2px;
+	border-bottom: 1px solid #C45400;
 }
 
 .module-info {
 	/*p*/
-	border-width: 1px;
-	border-bottom-style: solid;
 	border-spacing: 10px;
 	padding-bottom: 10px;
+	text-align:  justify;
 	font-style: italic;
 }
 
 .classes{
-	border-width: 1px;
-	/*padding:4px;*/
-	border-style: solid;;
+
 }
 
 .class-head{
-	background-color: gray;
-	color: white;
-	min-width: 99%;
-	margin-top: 0px;
-	padding:3px;
-	font-style: italic;
+	color: #C45100;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 20px;
+	border-bottom: 1px solid #C45400;
 }
 
 .class{
 	margin-left: 15px;
-	width:80%;
 }
 
 .class-name{
+	color: #187DBB;
 	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 20px;
+	border-bottom: 1px solid #187DBB;
 }
 
 .class-info{
@@ -60,92 +62,166 @@ body{
 	font-style: italic;
 }
 
+
+
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: #fff;
+  text-align: center;
+  font-style: italic;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: gray;/*#777;*/
+  border-radius: 10px;
+  margin-left: 5px;
+}
+.badge:empty {
+  display: none;
+}
+
+.properties{
+	margin-left: 15px;
+}
+
+.property-head{
+	color: #3C3C3C;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 18px;
+	border-bottom: 1px solid #3C3C3C;
+}
+
+
+.property{
+	margin-left: 15px;
+}
+
+
+.property-name{
+	color: #187DBB;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 20px;
+}
+
+.visible{
+	visibility: visible;
+	background-color: green;
+}
+
+.not-visible{
+	text-decoration: line-through;
+}
+.property-info{
+	/*method-info*/
+	font-size: 15px;
+	color: #404040;
+	font-style: italic;
+	padding-left: 15px;
+	/*margin-top: -5px;*/
+}
+
 .methods{
-	margin-left: 10px;
+	margin-left: 15px;
 }
 
 .method-head{
-	
+	color: #3C3C3C;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 18px;
+	border-bottom: 1px solid #3C3C3C;
 }
 
 .method{
-
+	margin-left: 15px;
 }
+
 
 .method-name{
-
+	color: #187DBB;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 20px;
 }
 
+
 .method-info{
-	
+	/*method-info*/
+	font-size: 15px;
+	color: #404040;
+	font-style: italic;
+	padding-left: 15px;
+}
+
+.method-name .suffix{
+	color: gray;
+	font-size: 10px;
+	padding-left: 10px;
 }
 
 .functions{
 	margin-top: 20px;
 	border-width: 1px;
-	/*padding:4px;*/
-	border-style: solid;;
 }
 
 .function-head{
-	background-color: gray;
-	color: white;
-	min-width: 99%;
-	margin-top: 0px;
-	padding:3px;
-	font-style: italic;
+	color: #C45100;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 20px;
+	border-bottom: 1px solid #C45400;
 }
 
 
 .function {
-	/*div*/
-	border-width: 1px;
-	/*padding: 10px;*/
-	/*border: 2px groove;*/
-	width: 95%;
-	margin: 0 auto;
-	margin-top: 20px;
-	margin-bottom: 10px;
+	margin-left: 15px;
 }
 
 .function-name{
-	/*label*/
-	background-color: green;
-	color: white;
-	margin: 0 auto;
-	margin-bottom: 10px;
-	margin-top: 0px;
+	color: #187DBB;
+	font-weight: bold;
+	padding-bottom: 2px;
 	font-size: 20px;
-	font-style: italic;
-	position: inline;
-	border:1px solid;
-	padding:10px;
 }
 
 .function-info{
 /*label*/
-	font-style: italic;
-	color: rgb(200,200,200);
-	font-weight: 100; ;
+	/*method-info*/
 	font-size: 15px;
-	margin-top: -2px;
-	margin-left: 5px;
+	color: #404040;
+	font-style: italic;
+	padding-left: 15px;
 }
+
+
 
 .args{
-	margin-left: 20px;
-	width: 95%;
-	margin: 0 auto;
+	margin-left: 25px;
 }
 
-.arg-head{
-	border-bottom: 1px solid;
+.args-head{
+	color: #404040;
+	font-weight: bold;
+	padding-bottom: 2px;
+	font-size: 15px;
+	border-bottom: 1px solid #404040;
 }
 
 
 .arg{
 	border:1px  ;
-	padding: 5px;
+	margin-top: -3px;
+}
+
+div.arg {
+	margin-left: 15px;
 }
 
 .arg-name{
@@ -155,7 +231,12 @@ body{
 }
 
 .arg-info{
-
+	font-style: italic;
+	color: #404040;
+	font-weight: 100; ;
+	font-size: 15px;
+	margin-top: -20px;
+	margin-left: 5px;
 }
 
 .arg-default{

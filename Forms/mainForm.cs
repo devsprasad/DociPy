@@ -20,6 +20,10 @@ namespace DociPy
             InitializeComponent();
             Program.PyInit(new CustomStream(ipyEdit));
             setupEditor();
+            string p = System.IO.Path.Combine(Application.StartupPath, @"data\Lib\");
+            p = p.Replace(@"\\", @"/");
+            p = p.Replace(@"/", @"\");
+            Program.ipy.Engine.SetSearchPaths(new string[] { p });
         }
 
 
@@ -95,6 +99,7 @@ namespace DociPy
 
         private void mainForm_Load(object sender, EventArgs e)
         {
+            //9008653555
             Program.ipy.LoadLibs(@".\data\processors");
             LoadEngines();
             loadThemes();

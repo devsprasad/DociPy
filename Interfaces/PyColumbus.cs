@@ -87,7 +87,7 @@ namespace DociPy
                     {
                         pm.Functions.Add(pf);
                     }
-                    current_doc.Clear();
+                    current_doc = new List<string>();
                 }
                 else if (line.StartsWith("class "))
                 {
@@ -101,6 +101,11 @@ namespace DociPy
                     string[] imports = line.Replace("import ", "").Split(',');
                     Debug.Print("Dependency found");
                     pm.Imports.AddRange(imports);
+                }
+                else if (line.Trim().Trim('\t').Trim().StartsWith("@"))
+                {
+                    current_doc.Add(line.Trim().Trim('\t').Trim());
+                    System.Diagnostics.Debug.Print(line);
                 }
                 else
                 {
@@ -164,6 +169,7 @@ namespace DociPy
                 int Indent = _indentLevel(line);
                 if (Indent == 0 && line != "\r")
                 {
+                    i--; 
                     break; // class ends here
                 }
                 else
@@ -227,7 +233,6 @@ namespace DociPy
         public PyFunction _processPyFunction(ref int i, List<string> doc)
         {
             PyFunction pf = new PyFunction();
-            pf.RawDocLine = doc;
             string header = _lines[i].Trim();
             header = header.Replace("def ", "");
             string name = header.Substring(0, header.IndexOf("("));
@@ -263,6 +268,11 @@ namespace DociPy
             }
             pf.Args = _args.Values.ToList();
             pf.Description = func_doc;
+            pf.RawDocLine = new List<string>();
+            foreach (var item in doc)
+            {
+                pf.RawDocLine.Add(item);
+            }
             return pf;
         }
 
