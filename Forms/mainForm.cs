@@ -59,8 +59,9 @@ namespace DociPy
             foreach (string dir in dirs)
             {
                 string config_file = Path.Combine(dir, "theme.config");
-                string template_file = Path.Combine(dir, "template.html");
-                if (File.Exists(config_file) && File.Exists(template_file))
+                string module_template_file = Path.Combine(dir, "module.html");
+                string index_template_file = Path.Combine(dir, "index.html");
+                if (File.Exists(config_file) && File.Exists(module_template_file) && File.Exists(index_template_file))
                 {
                     cmbThemes.Items.Add(dir.Replace(template_path + "\\", ""));
                 }
@@ -235,6 +236,7 @@ namespace DociPy
             {
                 clearFolder(_docEngine.OutputDirectory);
                 _docEngine.Generate(full_paths.ToArray());
+                GC.Collect();
             } catch (Exception ex)
             {
                 log("\n ");
@@ -283,7 +285,7 @@ namespace DociPy
         {
             FolderBrowserDialog fd = new FolderBrowserDialog();
 #if DEBUG
-            fd.SelectedPath = @"F:\Circuit\Projects\UWAC\UWACSim\DociPy\DociPy\bin\Debug\test";
+            fd.SelectedPath = @"F:\Circuit\Projects\UWAC\UWACSim\DociPy\DociPy\bin\Debug\data\samples";
 #endif
             fd.RootFolder = Environment.SpecialFolder.MyComputer;
             fd.Description = "Select a folder to look for python scripts";

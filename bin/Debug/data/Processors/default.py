@@ -2,7 +2,7 @@ from DociPy import AbstractDocEngine, PyColumbus
 from DociPy.PyTypes import *
 import System
 from System.ComponentModel import *
-
+from System import *
 
 
 
@@ -14,17 +14,27 @@ class _HTMLDocGen(object):
 	__styles = []
 	__themeDir = ""
 	__output = ""
-	__template_data = ""
+	__root = ""
+	__module_template_data = ""
+	__index_template_data = ""
 	__log = None
+	__project_info = ""
+	__recreate_root = False
+	__include_module_doc = False
 
-	def __init__(self,title, version, theme_dir, output_dir,log_func):
+	def __init__(self,title, version, info, include_module_doc_in_index, 
+		theme_dir, root_dir, output_dir, recreate_root,log_func):
 		super(_HTMLDocGen, self).__init__()
 		self.__themeDir = theme_dir
+		self.__root = root_dir
 		self.__output = output_dir
 		self.__createThemeConfig()
 		self.__log = log_func
 		self.__project_title =title
 		self.__project_version = version
+		self.__project_info = info
+		self.__recreate_root = recreate_root
+		self.__include_module_doc = include_module_doc_in_index
 
 	def __relativeStylePath(self,target,exact_file):
 		fi = System.IO.FileInfo(exact_file)
@@ -67,8 +77,11 @@ class _HTMLDocGen(object):
 		f = open(path,"r")
 		data = f.readlines()
 		f.close()
-		f= open(self.__themeDir + "\\template.html")
-		self.__template_data = f.read()
+		f= open(self.__themeDir + "\\module.html")
+		self.__module_template_data = f.read()
+		f.close()
+		f = open(self.__themeDir + "\\index.html")
+		self.__index_template_data = f.read()
 		f.close()
 		key = ""
 		for line in data:
@@ -90,21 +103,41 @@ class _HTMLDocGen(object):
 	def __wrapArguments(self, args):
 		html = ""
 		for arg in args:
-			d = self.__config["arg"]
+			d = self.__config["args"]
 			d = d.replace("[arg_name]", arg.Name)
 			d = d.replace("[arg_info]", str(arg.Description))
 			d = d.replace("[arg_default]", str(arg.Default))
 			html += d
+		if html == "": html = "(no arguments)"
 		return html
 
-	def __wrapFunctions(self, functions):
+	def __createArgTuple(self, args):
+		html = []
+		for arg in args:
+			s = self.__config["arg"]
+			s = s.replace("[arg_name]", arg.Name)
+			if arg.Default !=None: s = s.replace("[arg_default]", "= %s" % arg.Default)
+			else: s = s.replace("[arg_default]","")
+			html.append(s)
+		return ",".join(html)
+
+	def __wrapFunctions(self, functions, method = False, className = ""):
 		html = ""
+		if method : sub = "method"
+		else: sub = "function"
 		for func in functions:
-			d = self.__config["function"]
-			d = d.replace("[function_name]", func.Name)
-			d = d.replace("[function_info]", func.Description)
-			d = d.replace("[arguments]", self.__wrapArguments(func.Args))
+			d = self.__config["%s" % sub]
+			if func.Name == "__init__" and method: 
+				func.Name = className 
+				d = self.__config["constructor"]
+			d = d.replace("[%s_name]" % sub, func.Name)
+			d = d.replace("[%s_info]" % sub, func.Description)
+			d = d.replace("[arg_tuple]",str(self.__createArgTuple(func.Args)))
+			d = d.replace("[arguments]",self.__wrapArguments(func.Args) )
 			html += d
+		if html == "": 
+			if method: html = "(no methods)"
+			else: html = "(no functions)"
 		return html
 
 	def __wrapClasses(self, _classes):
@@ -113,12 +146,14 @@ class _HTMLDocGen(object):
 			d = self.__config["class"]
 			d = d.replace("[class_name]", _class.Name)
 			d = d.replace("[class_info]", _class.Description)
-			d = d.replace("[methods]", self.__wrapFunctions(_class.Methods))
+			d = d.replace("[methods]", 
+				self.__wrapFunctions(_class.Methods,True,_class.Name))
 			html += d
+		if html == "": html = "(no classes)"
 		return html
 
 	def __wrapModule(self, module):
-		html = self.__template_data
+		html = self.__module_template_data
 		mod = self.__config["module"]
 		mod = mod.replace("[module_name]", module.Name)
 		mod = mod.replace("[module_info]", module.Description)
@@ -128,18 +163,50 @@ class _HTMLDocGen(object):
 		return html
 
 
-	def generate(self,module,dst_path):
-		html = self.__wrapModule(module)
+	def __process_template(self,html,dst_path):
 		html = html.replace("[styles]", self.__createStyles(dst_path))
 		html = html.replace("[project_title]", self.__project_title)
 		html = html.replace("[project_version]", self.__project_version)
-		self.__createFile(dst_path, html)
+		html = html.replace("[project_description]", " ".join(self.__project_info))
 		return html
+
+
+	def __process(self, module,dst_path):
+		html = self.__wrapModule(module)
+		html = self.__process_template(html,dst_path)
+		self.__createFile(dst_path, html)
+		return dst_path
+
+	def __wrapIndexModule(self, module,module_path, include_doc = True):
+		name = str(module.Name).strip("\\").replace("\\",".").replace(".py","")
+		if include_doc: data = str(module.Description)
+		else: data = ""
+		html = self.__config["indexmodule"]
+		html = html.replace("[module_name]",name)
+		html = html.replace("[module_info]", data)
+		html = html.replace("[module_path]", module_path)
+		return html
+
+	def generate(self,modules):
+		html = ""
+		for mod in modules:
+			self.__log("generating %s.html ..." % mod.Name.split("\\")[-1])
+			src_path = str(mod.Name).replace(self.__root + "\\","")
+			if not self.__recreate_root: src_path = src_path.replace("\\",".")
+			dst_path = System.IO.Path.Combine(self.__output, src_path) + ".html"
+			mod.Name = str(mod.Name).replace(self.__root, "")
+			dst_path = self.__process(mod,dst_path)
+			self.__log("done\n")
+			html += self.__wrapIndexModule(mod,dst_path.replace(self.__output,".\\"), self.__include_module_doc) + "\n"
+		index_file = self.__output + "\\index.html"
+		index = self.__process_template(self.__index_template_data, index_file)
+		html = index.replace("[modules]", html)
+		self.__createFile(index_file, html)
 
 
 		
 
-class EngineDynaThemer(AbstractDocEngine):
+class EngineHTML(AbstractDocEngine):
 
 	__output_path = ".\docs\\"
 	__root_path =""
@@ -150,9 +217,12 @@ class EngineDynaThemer(AbstractDocEngine):
 	__classFirst = True
 	__project_title = "MyProject"
 	__project_version = "1.0.0"
+	__project_description = Array[str]([])
+	__root_path_recreate = False
+	__include_mod_doc_in_index = True
 
 	def __init__(self):
-		super(EngineDynaThemer, self).__init__()
+		super(EngineHTML, self).__init__()
 		self.__output_path = "docs"
 		self.__parser = PyColumbus()
 
@@ -163,6 +233,14 @@ class EngineDynaThemer(AbstractDocEngine):
 	@ProjectTitle.setter
 	def ProjectTitle(self,val):
 		self.__project_title = val
+
+	@property
+	def ProjectDescription(self):
+	    return self.__project_description
+
+	@ProjectDescription.setter
+	def ProjectDescription(self,val):
+		self.__project_description = val
 
 	@property
 	def ProjectVersion(self):
@@ -197,6 +275,23 @@ class EngineDynaThemer(AbstractDocEngine):
 	def RootDirectory(self,val):
 		self.__root_path = val
 
+	@property
+	def RecreateRootStructure(self):
+		return self.__root_path_recreate
+
+	@RecreateRootStructure.setter
+	def RecreateRootStructure(self,val):
+		self.__root_path_recreate = val
+
+	@property
+	def IncludeModuleDocInIndex(self):
+		return self.__include_mod_doc_in_index
+
+	@IncludeModuleDocInIndex.setter
+	def IncludeModuleDocInIndex(self,val):
+		self.__include_mod_doc_in_index = val
+
+
 	def __invokeParser(self,files):
 		pymodules = []
 		for _file in files:
@@ -210,21 +305,17 @@ class EngineDynaThemer(AbstractDocEngine):
 
 	def Generate(self, files):
 		if System.IO.Directory.Exists(self.__root_path):
-			self.__htmlgen = _HTMLDocGen(self.ProjectTitle, self.ProjectVersion,
-			 self.__theme_path, self.__output_path, self.log)
+			self.__htmlgen = _HTMLDocGen(self.ProjectTitle, self.ProjectVersion, self.ProjectDescription,
+				self.IncludeModuleDocInIndex, self.__theme_path,self.__root_path, self.__output_path,
+				self.RecreateRootStructure, self.log)
 			self.log("starting..\n")
 			self.log("creating output directory..")
 			System.IO.Directory.CreateDirectory(self.__output_path)
 			self.log("done\n")
 			pymods = self.__invokeParser(files)
 			self.log("generating html files...\n")
-			for mod in pymods:
-				self.log("generating %s.html ..." % mod.Name.split("\\")[-1])
-				src_path = str(mod.Name).replace(self.__root_path + "\\","")
-				dst_path = System.IO.Path.Combine(self.__output_path, src_path) + ".html"
-				mod.Name = str(mod.Name).replace(self.__root_path, "")
-				self.__htmlgen.generate(mod,dst_path)
-				self.log("done\n")
+			self.__htmlgen.generate(pymods)
+			self.log("finished.")
 		else:
 			self.log("invalid root path: %s\n" % self.__root_path)
 

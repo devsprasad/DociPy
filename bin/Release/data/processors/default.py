@@ -225,6 +225,7 @@ class EngineDynaThemer(AbstractDocEngine):
 				mod.Name = str(mod.Name).replace(self.__root_path, "")
 				self.__htmlgen.generate(mod,dst_path)
 				self.log("done\n")
+			self.log("finished.")
 		else:
 			self.log("invalid root path: %s\n" % self.__root_path)
 

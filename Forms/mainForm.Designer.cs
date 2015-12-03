@@ -254,12 +254,13 @@
             // 
             this.ipyEdit.CharIndex = 1;
             this.ipyEdit.LineIndex = 1;
-            this.ipyEdit.Location = new System.Drawing.Point(670, 44);
+            this.ipyEdit.Location = new System.Drawing.Point(634, 44);
             this.ipyEdit.Name = "ipyEdit";
             this.ipyEdit.Prompt = ">> ";
-            this.ipyEdit.Size = new System.Drawing.Size(124, 365);
+            this.ipyEdit.Size = new System.Drawing.Size(182, 365);
             this.ipyEdit.TabIndex = 0;
             this.ipyEdit.Text = "";
+            this.ipyEdit.Visible = false;
             this.ipyEdit.CommandEntered += new System.EventHandler<SimbedEnvisionCodeEditor.CommandEnteredEventArgs>(this.ipyEdit_CommandEntered);
             this.ipyEdit.TextChanged += new System.EventHandler(this.ipyEdit_TextChanged);
             // 
